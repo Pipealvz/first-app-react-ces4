@@ -25,71 +25,67 @@ const TodoList = () => {
     const handleSubmitList = (e) => {
         e.preventDefault();
         if (saldoGuardado !== 0) {
-            //Editar movimientos
-            if (controllerForm.estado === 'Gasto') {
-                const lastMov = parseFloat(controllerForm.valor);
-                if (lastMov > saldoGuardado) {
+            const lastMov = parseFloat(controllerForm.valor);
+            if (controllerForm.estado === 'Gasto' && lastMov > saldoGuardado) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'El saldo inicial es menor al gasto',
+                    confirmButtonText: 'Aceptar'
+                });
+                return;
+            } else if (arrayEdit !== null) {
+                const originalArrayEdit = [...arrayTodo] // almacena el array
+                const todo = originalArrayEdit.find(todo => todo.id === arrayEdit); //filtra 
+                todo.estado = controllerForm.estado;
+                todo.titulo = controllerForm.titulo;
+                todo.valor = controllerForm.valor;
+                setArrayTodo(originalArrayEdit);//capturamos el array modificado
+                setArrayEdit(null);
+                setControllerForm({ titulo: '', valor: '', estado: '' });
+            } else {
+                if (controllerForm.titulo !== '' && controllerForm.valor > 0) {
+                    //Agregar movimiento
+                    const list = controllerForm;
+                    list.id = uuidv4();
+                    const lastState = controllerForm.estado //capturamos el último estado enviado
+                    const lastMov = parseFloat(controllerForm.valor);
+                    console.log(lastMov, lastState);
+                    if (lastState === 'Gasto') {
+                        const saldo = parseFloat(saldoGuardado);
+                        const newSaldo = saldo - lastMov;
+                        setSaldoGuardado(newSaldo);
+
+                    } else {
+                        const saldo = parseFloat(saldoGuardado);
+                        const newSaldo = saldo + lastMov;
+                        setSaldoGuardado(newSaldo);
+                    }
+
+                    //console.log(lastState);
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'El saldo inicial es menor al gasto',
-                        confirmButtonText: 'Aceptar'
-                    });
-                    return; // No agregar el gasto si el saldo es insuficiente
-                }
-            } else
-                if (arrayEdit !== null) {
-                    const originalArrayEdit = [...arrayTodo] // almacena el array
-                    const todo = originalArrayEdit.find(todo => todo.id === arrayEdit); //filtra 
-                    todo.estado = controllerForm.estado;
-                    todo.titulo = controllerForm.titulo;
-                    todo.valor = controllerForm.valor;
-                    setArrayTodo(originalArrayEdit);//capturamos el array modificado
-                    setArrayEdit(null);
-                    setControllerForm({ titulo: '', valor: '', estado: '' });
-                } else {
-                    if (controllerForm.titulo !== '' && controllerForm.valor > 0) {
-                        //Agregar movimiento
-                        const list = controllerForm;
-                        list.id = uuidv4();
-                        const lastState = controllerForm.estado //capturamos el último estado enviado
-                        const lastMov = parseFloat(controllerForm.valor);
-                        console.log(lastMov, lastState);
-                        if (lastState === 'Gasto') {
-                            const saldo = parseFloat(saldoGuardado);
-                            const newSaldo = saldo - lastMov;
-                            setSaldoGuardado(newSaldo);
-
-                        } else {
-                            const saldo = parseFloat(saldoGuardado);
-                            const newSaldo = saldo + lastMov;
-                            setSaldoGuardado(newSaldo);
-                        }
-
-                        //console.log(lastState);
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Guardado',
-                            text: 'Movimiento guardado con éxito. <3',
-                            html: `
+                        icon: 'success',
+                        title: 'Guardado',
+                        text: 'Movimiento guardado con éxito. <3',
+                        html: `
                         <div>
                         <img style="width: 50%; height: 50%;" src=${ok} alt="Ok" />
                         </div>
                         `,
-                            confirmButtonText: 'Aceptar'
-                        });
-                        setArrayTodo([...arrayTodo, list]);
-                        setControllerForm({ titulo: desc[aleatoriodesc], valor: Math.floor(Math.random() * 10000000), estado: lastState });
-                        console.log(list)
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: `Verifique los valores ingresados`,
-                            confirmButtonText: 'Aceptar'
-                        });
-                    }
+                        confirmButtonText: 'Aceptar'
+                    });
+                    setArrayTodo([...arrayTodo, list]);
+                    setControllerForm({ titulo: desc[aleatoriodesc], valor: Math.floor(Math.random() * 10000000), estado: lastState });
+                    console.log(list)
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `Verifique los valores ingresados`,
+                        confirmButtonText: 'Aceptar'
+                    });
                 }
+            }
         } else {
             Swal.fire({
                 icon: 'error',
@@ -149,10 +145,6 @@ const TodoList = () => {
         setSaldoInicial(e.target.value);
     }
 
-    const handleSubmitSerach = (e) => {
-        e.preventDefault();
-    }
-
     // const totalTodogasto = arrayTodo.filter(todo => todo.estado === false).length
     // const totalTodoIngreso = arrayTodo.filter(todo => todo.estado === true).length
 
@@ -180,61 +172,34 @@ const TodoList = () => {
                 </form>
                 <hr />
                 <div className="d-flex p-3">
-                    <form className="container form-control w-50 h-auto shadow rounded" onSubmit={handleSubmitList} onChange={handleChangeIngreso}>
-                        <br />
-                        <div className="d-flex justify-content-between w-100">
-                            <div className="d-flex w-auto justify-content-center"> <h4> Tipo Movimiento: </h4> </div>
-                            <select className="form-control w-50" name="estado">
-                                <option value="Ingreso">Ingreso</option>
-                                <option value="Gasto"> Gasto</option>
-                            </select>
-                        </div>
-                        <hr />
-                        <div className="d-flex justify-content-between w-100">
-                            <div className="d-flex w-auto justify-content-center"> <h4> Nombre: </h4> </div>
-                            <input className="form-control w-50" type="text" placeholder="Nombre" name="titulo" value={controllerForm.titulo} />
-                        </div>
-                        <hr />
-                        <div className="d-flex justify-content-between w-100">
-                            <div className="d-flex w-auto justify-content-center"> <h4> Cantidad: </h4> </div>
-                            <input className="form-control w-50" type="number" placeholder="$ Cantidad" name="valor" value={controllerForm.valor} />
-                        </div>
-                        <hr />
-                        <div className="d-flex justify-content-between w-100">
-                            <input className="btn btn-primary w-auto m-auto" type="submit" value="Guardar" />
-                        </div>
-                    </form>
-                    <div className="ms-1 me-1"></div>
-                    <form className="container form-control shadow rounded w-50">
-                        <br />
-                        <form className="container d-flex justify-content-around align-items-center">
-                            <div className="d-flex w-50">
-                                <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                                <button className="btn btn-outline-success" type="submit" onClick={handleSubmitSerach}>Search</button>
-                            </div>
+                    <div className="container form-control w-50 h-auto shadow rounded">
+                        <form className="" onSubmit={handleSubmitList} onChange={handleChangeIngreso}>
                             <br />
-                            <div className="d-flex justify-content-around w-50">
-                                <div className="form-check">
-                                    <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"/>
-                                    <label className="form-check-label" for="flexRadioDefault1">
-                                        Todos
-                                    </label>
-                                </div>
-                                <div className="form-check">
-                                    <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
-                                    <label className="form-check-label" for="flexRadioDefault2">
-                                        Ingresos
-                                    </label>
-                                </div>
-                                <div className="form-check">
-                                    <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" />
-                                    <label className="form-check-label" for="flexRadioDefault3">
-                                        Gastos
-                                    </label>
-                                </div>
+                            <div className="d-flex justify-content-between w-100">
+                                <div className="d-flex w-auto justify-content-center"> <h4> Tipo Movimiento: </h4> </div>
+                                <select className="form-control w-50" name="estado">
+                                    <option value="Ingreso">Ingreso</option>
+                                    <option value="Gasto"> Gasto</option>
+                                </select>
+                            </div>
+                            <hr />
+                            <div className="d-flex justify-content-between w-100">
+                                <div className="d-flex w-auto justify-content-center"> <h4> Nombre: </h4> </div>
+                                <input className="form-control w-50" type="text" placeholder="Nombre" name="titulo" value={controllerForm.titulo} />
+                            </div>
+                            <hr />
+                            <div className="d-flex justify-content-between w-100">
+                                <div className="d-flex w-auto justify-content-center"> <h4> Cantidad: </h4> </div>
+                                <input className="form-control w-50" type="number" placeholder="$ Cantidad" name="valor" value={controllerForm.valor} />
+                            </div>
+                            <hr />
+                            <div className="d-flex justify-content-between w-100">
+                                <input className="btn btn-primary w-auto m-auto" type="submit" value="Guardar" />
                             </div>
                         </form>
-                        <hr />
+                    </div>
+                    <div className="ms-1 me-1"></div>
+                    <form className="container form-control shadow rounded w-50">
                         <div className="d-flex justify-content-between">
                             <h3> Movimientos </h3>
                             <span className="d-flex bagde bg-primary rounded-pill align-items-center justify-content-center w-auto p-2 text-light">{arrayTodo.length}</span>
