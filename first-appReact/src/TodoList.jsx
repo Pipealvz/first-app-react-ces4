@@ -181,6 +181,7 @@ const TodoList = () => {
                 <hr />
                 <div className="d-flex p-3">
                     <form className="container form-control w-50 h-auto shadow rounded" onSubmit={handleSubmitList} onChange={handleChangeIngreso}>
+                        <br />
                         <div className="d-flex justify-content-between w-100">
                             <div className="d-flex w-auto justify-content-center"> <h4> Tipo Movimiento: </h4> </div>
                             <select className="form-control w-50" name="estado">
@@ -205,22 +206,35 @@ const TodoList = () => {
                     </form>
                     <div className="ms-1 me-1"></div>
                     <form className="container form-control shadow rounded w-50">
-                        <form className="d-flex">
-                            <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                            <button className="btn btn-outline-success" type="submit" onClick={handleSubmitSerach}>Search</button>
-                            <div className="form-check">
-                                <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked/>
+                        <br />
+                        <form className="container d-flex justify-content-around align-items-center">
+                            <div className="d-flex w-50">
+                                <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+                                <button className="btn btn-outline-success" type="submit" onClick={handleSubmitSerach}>Search</button>
+                            </div>
+                            <br />
+                            <div className="d-flex justify-content-around w-50">
+                                <div className="form-check">
+                                    <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"/>
                                     <label className="form-check-label" for="flexRadioDefault1">
                                         Todos
                                     </label>
-                            </div>
-                            <div className="form-check">
-                                <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2"/>
+                                </div>
+                                <div className="form-check">
+                                    <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
                                     <label className="form-check-label" for="flexRadioDefault2">
-                                        Default checked radio
+                                        Ingresos
                                     </label>
+                                </div>
+                                <div className="form-check">
+                                    <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" />
+                                    <label className="form-check-label" for="flexRadioDefault3">
+                                        Gastos
+                                    </label>
+                                </div>
                             </div>
                         </form>
+                        <hr />
                         <div className="d-flex justify-content-between">
                             <h3> Movimientos </h3>
                             <span className="d-flex bagde bg-primary rounded-pill align-items-center justify-content-center w-auto p-2 text-light">{arrayTodo.length}</span>
