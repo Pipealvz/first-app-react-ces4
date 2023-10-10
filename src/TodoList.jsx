@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Swal from 'sweetalert2'
 import { v4 as uuidv4 } from 'uuid';
-import ok from './images/ok.webp'
+import ok from '../images/ok.webp'
 
 const TodoList = () => {
 
